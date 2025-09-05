@@ -3,16 +3,19 @@
         <label class="todoList_label">
             <input class="todoList_input" type="checkbox" v-model="todo.status" @change="todoStatusBtn">
             <span v-if="!isEditTodo">{{ todo.content }}</span>
-            <input v-else style="padding: 5px" type="text" v-model="todo.content">
+            <input v-else style="padding: 5px" type="text" v-model="todo.content" @blur="cancleEdit">
         </label>
         <div class="control-box">
             <a v-if="!isEditTodo" @click.prevent="isEditTodo=!isEditTodo">
                 <i class="fa-solid fa-pen-to-square"></i>
             </a>
-            <a v-else  @click.prevent="editTodoBtn">
+            <a v-if="!isEditTodo" @click.prevent="removeTodoHandler(todo.id)">
+                <i class="fa-solid fa-trash"></i>
+            </a>
+            <a v-if="isEditTodo" @click.prevent="editTodoBtn" @mousedown.prevent="isClickingBtn = true">
                 <i class="fa-solid fa-check"></i>
             </a>
-            <a @click.prevent="removeTodoHandler(todo.id)">
+            <a v-if="isEditTodo" @click.prevent="cancleEdit">
                 <i class="fa fa-times"></i>
             </a>
         </div>
@@ -40,11 +43,30 @@ const emit = defineEmits(['removeTodoTwo']);
 
 //編輯內容狀態
 const isEditTodo=ref(false);
+const isClickingBtn=ref(false);
+const preTodoTxt=ref(props.todo.content);
+
+const cancleEdit=()=>{
+    // console.log(preTodoTxt.value);
+    if(!isClickingBtn.value){
+        props.todo.content = preTodoTxt.value;
+    }
+    // if(isClickingBtn.value){
+    //     console.log('點了勾勾');
+    // }else{
+    //     console.log('沒點勾勾');
+    //     props.todo.content = preTodoTxt.value;
+    // }
+    isClickingBtn.value = false;
+    isEditTodo.value = false;
+}
+
 const editTodoBtn = async()=>{
     try{
-        const editData={ content:props.todo.content }
+        const editData = { content:props.todo.content }
         const data = await apiEditTodo(props.todo.id,editData);
         alert(data.data.message);
+        preTodoTxt.value=props.todo.content;
         isEditTodo.value=false;
     }catch(e){
         console.log(e);
