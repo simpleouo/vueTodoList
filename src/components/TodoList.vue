@@ -5,7 +5,7 @@
                 <!-- (data)=>{emit('removeTodoOne',data)} -->
         </ul>
         <div class="todoList_statistics">
-            <p> {{ doneCount }} 個已完成項目</p>
+            <p> {{ doneCount }} 個待完成項目</p>
         </div>
     </div>
 </template>
@@ -36,7 +36,7 @@ const emit = defineEmits(['removeTodoOne']);
 //注意：如果是取用帶入的 props 值，是這樣使用 props.todoList 
 //不需要加上 .value
 const doneCount = computed(()=>{
-    const filter = props.todoList.filter((item)=>item.status==true)
+    const filter = props.todoList.filter((item)=>item.status==false)
     return filter.length;
 })
 
